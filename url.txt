@@ -1,0 +1,1 @@
+https://api.tsutsu.one/sub?target=clash&url=https://tagcdnsub.com/api/v1/client/subscribe/token=<token>&insert=false&config=https://raw.githubusercontent.com/sxyzy1016/sub-ini/main/tsutsu-full-tag-satmos.ini&filename=TAG&emoji=true&list=false&tfo=false&scv=false&fdn=false&sort=false&expand=true&udp=true&new_name=true
