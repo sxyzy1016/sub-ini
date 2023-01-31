@@ -1,0 +1,5 @@
+# OpenVPN
+PROCESS-NAME,openvpn.exe
+PROCESS-NAME,openvpn-gui.exe
+PROCESS-NAME,openvpnserv.exe
+
