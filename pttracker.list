@@ -1,0 +1,14 @@
+DOMAIN,tracker.m-team.cc
+DOMAIN,ipv6-tracker.m-team.cc
+DOMAIN,tracker.hdtime.org
+DOMAIN,tracker.hdsky.me
+DOMAIN,tracker.byr.pt
+DOMAIN,t.pthome.net
+DOMAIN,tracker.pthome.net
+DOMAIN,www.pttime.org
+DOMAIN,tracker.open.cd
+DOMAIN,www.nicept.net
+DOMAIN,tracker.hitpt.com
+DOMAIN,hitwh.oncampus.hitpt.com
+DOMAIN,tracker.pornbay.wtf
+URL-REGEX,(.+.)?(torrent|announce.php?passkey=|tracker|BitTorrent|bt_key|ed2k|find_node|get_peers|info_hash|magnet:|peer_id=|xunlei)(..+)?
