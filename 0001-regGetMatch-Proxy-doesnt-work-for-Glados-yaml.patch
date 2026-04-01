@@ -1,0 +1,25 @@
+From cb203df3c99b782e95d9126b9c18ec9ae3bc9cd3 Mon Sep 17 00:00:00 2001
+From: sxyzy1016 <sxyzy1016@outlook.com>
+Date: Sat, 7 Mar 2026 11:58:25 +0800
+Subject: [PATCH 1/4] regGetMatch-Proxy doesnt work for Glados yaml
+
+---
+ src/parser/subparser.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/parser/subparser.cpp b/src/parser/subparser.cpp
+index 6ef0f7f..e83577e 100644
+--- a/src/parser/subparser.cpp
++++ b/src/parser/subparser.cpp
+@@ -3201,7 +3201,7 @@ void explodeSub(std::string sub, std::vector<Proxy> &nodes)
+     {
+         if(!processed && regFind(sub, "\"?(Proxy|proxies)\"?:"))
+         {
+-            regGetMatch(sub, R"(^(?:Proxy|proxies):$\s(?:(?:^ +?.*$| *?-.*$|)\s?)+)", 1, &sub);
++            //regGetMatch(sub, R"(^(?:Proxy|proxies):$\s(?:(?:^ +?.*$| *?-.*$|)\s?)+)", 1, &sub);
+             Node yamlnode = Load(sub);
+             if(yamlnode.size() && (yamlnode["Proxy"].IsDefined() || yamlnode["proxies"].IsDefined()))
+             {
+-- 
+2.43.0
+

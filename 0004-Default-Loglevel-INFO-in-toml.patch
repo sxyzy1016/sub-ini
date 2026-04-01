@@ -1,0 +1,27 @@
+From 03286aab1dbbea9064ee217b3d1106af172d8cc1 Mon Sep 17 00:00:00 2001
+From: sxyzy1016 <sxyzy1016@outlook.com>
+Date: Sat, 7 Mar 2026 17:17:45 +0800
+Subject: [PATCH 4/4] Default Loglevel INFO in toml
+
+---
+ base/pref.example.toml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/base/pref.example.toml b/base/pref.example.toml
+index 6448eb9..46fb1a2 100644
+--- a/base/pref.example.toml
++++ b/base/pref.example.toml
+@@ -332,8 +332,8 @@ port = 25500
+ serve_file_root = "web"
+ 
+ [advanced]
+-log_level = "debug"
+-print_debug_info = true
++log_level = "info"
++print_debug_info = false
+ max_pending_connections = 10240
+ max_concurrent_threads = 4
+ max_allowed_rulesets = 64
+-- 
+2.43.0
+

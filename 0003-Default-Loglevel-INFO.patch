@@ -1,0 +1,25 @@
+From 83bab2d90180f63051f4c30d02fd93d0462de381 Mon Sep 17 00:00:00 2001
+From: sxyzy1016 <sxyzy1016@outlook.com>
+Date: Sat, 7 Mar 2026 14:07:42 +0800
+Subject: [PATCH 3/4] Default Loglevel INFO
+
+---
+ src/handler/settings.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/handler/settings.h b/src/handler/settings.h
+index 18c7973..c4c97f9 100644
+--- a/src/handler/settings.h
++++ b/src/handler/settings.h
+@@ -29,7 +29,7 @@ struct Settings
+     bool printDbgInfo = false, CFWChildProcess = false, appendUserinfo = true, asyncFetchRuleset = false, surgeResolveHostname = true;
+     std::string accessToken, basePath = "base";
+     std::string custom_group;
+-    int logLevel = LOG_LEVEL_VERBOSE;
++    int logLevel = LOG_LEVEL_INFO;
+     long maxAllowedDownloadSize = 1048576L;
+     string_map aliases;
+ 
+-- 
+2.43.0
+

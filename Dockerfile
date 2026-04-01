@@ -1,11 +1,15 @@
-# FROM  metacubex/subconverter:latest AS subconverter_bins
 FROM alpine:latest AS subconverter_bins
-LABEL maintainer="sxyzy1016@outlook.com"
 ARG THREADS="20"
 ARG SHA=""
 
 # build minimized
 WORKDIR /
+
+COPY 0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch /
+COPY 0002-Modified-Version.patch /
+COPY 0003-Default-Loglevel-INFO.patch /
+COPY 0004-Default-Loglevel-INFO-in-toml.patch /
+
 RUN set -xe && \
     apk add --no-cache --virtual .build-tools git g++ build-base linux-headers cmake python3 py3-pip py3-gitpython && \
     apk add --no-cache --virtual .build-deps curl-dev rapidjson-dev pcre2-dev yaml-cpp-dev && \
@@ -37,8 +41,13 @@ RUN set -xe && \
     cmake -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=Release . && \
     make install -j $THREADS && \
     cd .. && \
-    git clone https://github.com/sxyzy1016/subconverter --depth=1 && \
+    #git clone https://github.com/sxyzy1016/subconverter --depth=1 && \
+    git clone https://github.com/MetaCubeX/subconverter --depth=1 && \
     cd subconverter && \
+    patch -p1 < /0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch && \
+    patch -p1 < /0002-Modified-Version.patch && \
+    patch -p1 < /0003-Default-Loglevel-INFO.patch && \
+    patch -p1 < /0004-Default-Loglevel-INFO-in-toml.patch && \
     [ -n "$SHA" ] && sed -i 's/\(v[0-9]\.[0-9]\.[0-9]\)/\1-'"$SHA"'/' src/version.h;\
     #python3 -m --break-system-packages ensurepip && \
     #python3 -m --break-system-packages pip install gitpython && \
@@ -48,7 +57,16 @@ RUN set -xe && \
     cp /subconverter/subconverter /usr/bin/subconverter && \
     cp -r /subconverter/base /base
 
-FROM careywong/subweb:latest AS subweb_dist
+
+FROM node:22-alpine AS subweb_dist
+WORKDIR /
+
+RUN apk add --no-cache git && \
+    git clone --depth=1 https://github.com/CareyWang/sub-web && \
+    cd sub-web && \
+    sed -i 's|http://127.0.0.1:25500|https://sub-licorico.koyeb.app|g' src/views/Subconverter.vue && \
+    yarn install && \
+    yarn build
 
 FROM nginx:stable-alpine
 
@@ -62,7 +80,7 @@ RUN apk add --no-cache \
 COPY --from=subconverter_bins /usr/bin/subconverter /usr/bin/subconverter
 COPY --from=subconverter_bins /base /base
 
-COPY --from=subweb_dist /usr/share/nginx/html /usr/share/nginx/html
+COPY --from=subweb_dist /sub-web/dist /usr/share/nginx/html
 
 COPY subweb.conf /etc/nginx/conf.d/default.conf
 
