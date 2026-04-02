@@ -1,0 +1,26 @@
+From 7cb7aede817acb2d641020003ebb631c3a9338c6 Mon Sep 17 00:00:00 2001
+From: sxyzy1016 <sxyzy1016@outlook.com>
+Date: Thu, 2 Apr 2026 10:33:02 +0800
+Subject: [PATCH 2/3] use new version of node
+
+---
+ package.json | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/package.json b/package.json
+index 9ae4817..85f6176 100644
+--- a/package.json
++++ b/package.json
+@@ -2,9 +2,6 @@
+   "name": "sub-web",
+   "version": "0.1.0",
+   "private": true,
+-  "engines": {
+-    "node": "22.x"
+-  },
+   "scripts": {
+     "dev": "vite",
+     "build": "vite build",
+-- 
+2.43.0
+

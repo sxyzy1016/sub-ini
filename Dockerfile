@@ -6,7 +6,7 @@ ARG SHA=""
 WORKDIR /
 
 COPY 0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch /
-COPY 0002-Modified-Version.patch /
+#COPY 0002-Modified-Version.patch /
 COPY 0003-Default-Loglevel-INFO.patch /
 COPY 0004-Default-Loglevel-INFO-in-toml.patch /
 
@@ -45,7 +45,7 @@ RUN set -xe && \
     git clone https://github.com/MetaCubeX/subconverter --depth=1 && \
     cd subconverter && \
     patch -p1 < /0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch && \
-    patch -p1 < /0002-Modified-Version.patch && \
+    #patch -p1 < /0002-Modified-Version.patch && \
     patch -p1 < /0003-Default-Loglevel-INFO.patch && \
     patch -p1 < /0004-Default-Loglevel-INFO-in-toml.patch && \
     [ -n "$SHA" ] && sed -i 's/\(v[0-9]\.[0-9]\.[0-9]\)/\1-'"$SHA"'/' src/version.h;\
@@ -58,13 +58,20 @@ RUN set -xe && \
     cp -r /subconverter/base /base
 
 
-FROM node:22-alpine AS subweb_dist
+FROM node:current-alpine AS subweb_dist
 WORKDIR /
 
-RUN apk add --no-cache git && \
+COPY 0001-Add-myown-backend-option-to-the-converter.patch /
+COPY 0002-use-new-version-of-node.patch /
+COPY 0003-Add-SATMOS-to-remote-configs.patch /
+
+RUN apk add --no-cache git patch && \
     git clone --depth=1 https://github.com/CareyWang/sub-web && \
     cd sub-web && \
-    sed -i 's|http://127.0.0.1:25500|https://sub-licorico.koyeb.app|g' src/views/Subconverter.vue && \
+    patch -p1 < /0001-Add-myown-backend-option-to-the-converter.patch && \
+    patch -p1 < /0002-use-new-version-of-node.patch && \
+    patch -p1 < /0003-Add-SATMOS-to-remote-configs.patch && \
+    #sed -i 's|http://127.0.0.1:25500|https://sub-licorico.koyeb.app|g' src/views/Subconverter.vue && \
     yarn install && \
     yarn build
 
