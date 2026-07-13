@@ -90,6 +90,6 @@ RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
 RUN echo $TZ > /etc/timezone
 
 WORKDIR /base
-CMD subconverter
+CMD ["subconverter"]
 
 EXPOSE 25500/tcp
