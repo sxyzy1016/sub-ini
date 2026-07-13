@@ -2,12 +2,11 @@ FROM alpine:latest AS subconverter_bins
 ARG THREADS="20"
 ARG SHA=""
 
-# build minimized
 WORKDIR /
 
 COPY 0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch /
-#COPY 0002-Modified-Version.patch /
 COPY 0003-Default-Loglevel-INFO.patch /
+COPY 0002-use-correct-directory.patch /
 COPY 0004-Default-Loglevel-INFO-in-toml.patch /
 
 RUN set -xe && \
@@ -35,22 +34,18 @@ RUN set -xe && \
     install -d /usr/include/date/ && \
     install -m644 libcron/externals/date/include/date/* /usr/include/date/ && \
     cd .. && \
-    #git clone https://github.com/ToruNiina/toml11 --branch="v4.3.0" --depth=1 && \
     git clone https://github.com/ToruNiina/toml11 --depth=1 && \
     cd toml11 && \
     cmake -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=Release . && \
     make install -j $THREADS && \
     cd .. && \
-    #git clone https://github.com/sxyzy1016/subconverter --depth=1 && \
     git clone https://github.com/MetaCubeX/subconverter --depth=1 && \
     cd subconverter && \
     patch -p1 < /0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch && \
-    #patch -p1 < /0002-Modified-Version.patch && \
+    patch -p1 < /0002-use-correct-directory.patch && \
     patch -p1 < /0003-Default-Loglevel-INFO.patch && \
     patch -p1 < /0004-Default-Loglevel-INFO-in-toml.patch && \
     [ -n "$SHA" ] && sed -i 's/\(v[0-9]\.[0-9]\.[0-9]\)/\1-'"$SHA"'/' src/version.h;\
-    #python3 -m --break-system-packages ensurepip && \
-    #python3 -m --break-system-packages pip install gitpython && \
     python3 scripts/update_rules.py -c scripts/rules_config.conf && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
     make -j $THREADS && \
@@ -71,11 +66,11 @@ RUN apk add --no-cache git patch && \
     patch -p1 < /0001-Add-myown-backend-option-to-the-converter.patch && \
     patch -p1 < /0002-use-new-version-of-node.patch && \
     patch -p1 < /0003-Add-SATMOS-to-remote-configs.patch && \
-    #sed -i 's|http://127.0.0.1:25500|https://sub-licorico.koyeb.app|g' src/views/Subconverter.vue && \
+    npm install -g yarn && \
     yarn install && \
     yarn build
 
-FROM nginx:stable-alpine
+FROM alpine:latest
 
 RUN apk add --no-cache \
     libcurl \
@@ -87,13 +82,14 @@ RUN apk add --no-cache \
 COPY --from=subconverter_bins /usr/bin/subconverter /usr/bin/subconverter
 COPY --from=subconverter_bins /base /base
 
-COPY --from=subweb_dist /sub-web/dist /usr/share/nginx/html
+RUN mkdir -p /base/web
+COPY --from=subweb_dist /sub-web/dist /base/web
 
-COPY subweb.conf /etc/nginx/conf.d/default.conf
-
-RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-subconverter.sh && \
-    echo "unset PORT" >> /docker-entrypoint.d/40-subconverter.sh && \
-    echo 'cd /base && nohup sh -c "subconverter 2>&1 &"' >> /docker-entrypoint.d/40-subconverter.sh && \
-    chmod +x /docker-entrypoint.d/40-subconverter.sh
+ENV TZ=Asia/Shanghai
+RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
+RUN echo $TZ > /etc/timezone
 
 WORKDIR /base
+CMD subconverter
+
+EXPOSE 25500/tcp

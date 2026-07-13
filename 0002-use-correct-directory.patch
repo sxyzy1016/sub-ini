@@ -1,0 +1,17 @@
+--- a/src/main.cpp	2026-07-13 15:55:55.048651900 +0800
++++ b/src/main.cpp	2026-07-13 15:48:02.337955800 +0800
+@@ -115,10 +115,10 @@ void cron_tick_caller()
+ 
+ int main(int argc, char *argv[])
+ {
+-#ifndef _DEBUG
+-    std::string prgpath = argv[0];
+-    setcd(prgpath); //first switch to program directory
+-#endif // _DEBUG
++//#ifndef _DEBUG
++//    std::string prgpath = argv[0];
++//    setcd(prgpath); //first switch to program directory
++//#endif // _DEBUG
+     if(fileExist("pref.toml"))
+         global.prefPath = "pref.toml";
+     else if(fileExist("pref.yml"))
