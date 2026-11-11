@@ -4,15 +4,11 @@ ARG SHA=""
 
 WORKDIR /
 
-COPY 0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch /
-COPY 0003-Default-Loglevel-INFO.patch /
-COPY 0002-use-correct-directory.patch /
-COPY 0004-Default-Loglevel-INFO-in-toml.patch /
-
 RUN set -xe && \
     apk add --no-cache --virtual .build-tools git g++ build-base linux-headers cmake python3 py3-pip py3-gitpython && \
-    apk add --no-cache --virtual .build-deps curl-dev rapidjson-dev pcre2-dev yaml-cpp-dev && \
-    git clone https://github.com/ftk/quickjspp --depth=1 && \
+    apk add --no-cache --virtual .build-deps curl-dev rapidjson-dev pcre2-dev yaml-cpp-dev
+
+RUN git clone https://github.com/ftk/quickjspp --depth=1 && \
     cd quickjspp && \
     git submodule update --init && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
@@ -22,8 +18,9 @@ RUN set -xe && \
     install -d /usr/include/quickjs/ && \
     install -m644 quickjs/quickjs.h quickjs/quickjs-libc.h /usr/include/quickjs/ && \
     install -m644 quickjspp.hpp /usr/include && \
-    cd .. && \
-    git clone https://github.com/PerMalmberg/libcron --depth=1 && \
+    cd ..
+
+RUN git clone https://github.com/PerMalmberg/libcron --depth=1 && \
     cd libcron && \
     git submodule update --init && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
@@ -33,18 +30,27 @@ RUN set -xe && \
     install -m644 libcron/include/libcron/* /usr/include/libcron/ && \
     install -d /usr/include/date/ && \
     install -m644 libcron/externals/date/include/date/* /usr/include/date/ && \
-    cd .. && \
-    git clone https://github.com/ToruNiina/toml11 --depth=1 && \
+    cd ..
+
+RUN git clone https://github.com/ToruNiina/toml11 --depth=1 && \
     cd toml11 && \
     cmake -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=Release . && \
     make install -j $THREADS && \
-    cd .. && \
-    git clone https://github.com/MetaCubeX/subconverter --depth=1 && \
+    cd ..
+
+COPY 0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch /
+COPY 0002-use-correct-directory.patch /
+COPY 0003-Default-Loglevel-INFO.patch /
+COPY 0004-Default-Loglevel-INFO-in-toml.patch /
+COPY 0005-remove-subconverter-from-header.patch /
+
+RUN git clone https://github.com/MetaCubeX/subconverter --depth=1 && \
     cd subconverter && \
     patch -p1 < /0001-regGetMatch-Proxy-doesnt-work-for-Glados-yaml.patch && \
     patch -p1 < /0002-use-correct-directory.patch && \
     patch -p1 < /0003-Default-Loglevel-INFO.patch && \
     patch -p1 < /0004-Default-Loglevel-INFO-in-toml.patch && \
+    patch -p1 < /0005-remove-subconverter-from-header.patch && \
     [ -n "$SHA" ] && sed -i 's/\(v[0-9]\.[0-9]\.[0-9]\)/\1-'"$SHA"'/' src/version.h;\
     python3 scripts/update_rules.py -c scripts/rules_config.conf && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
@@ -56,12 +62,13 @@ RUN set -xe && \
 FROM node:current-alpine AS subweb_dist
 WORKDIR /
 
+RUN apk add --no-cache git patch
+
 COPY 0001-Add-myown-backend-option-to-the-converter.patch /
 COPY 0002-use-new-version-of-node.patch /
 COPY 0003-Add-SATMOS-to-remote-configs.patch /
 
-RUN apk add --no-cache git patch && \
-    git clone --depth=1 https://github.com/CareyWang/sub-web && \
+RUN git clone --depth=1 https://github.com/CareyWang/sub-web && \
     cd sub-web && \
     patch -p1 < /0001-Add-myown-backend-option-to-the-converter.patch && \
     patch -p1 < /0002-use-new-version-of-node.patch && \
